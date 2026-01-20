@@ -1,0 +1,27 @@
+PS C:\Users\jc\Documents\PROG\JS\multires-front> netstat -ano | findstr :5173
+  TCP    [::1]:5173             [::]:0                 LISTENING       22544
+  TCP    [::1]:5173             [::1]:52181            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:54299            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:55672            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:58596            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:62752            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:63273            ESTABLISHED     22544
+  TCP    [::1]:5173             [::1]:64453            ESTABLISHED     22544
+  TCP    [::1]:63273            [::1]:5173             ESTABLISHED     22428
+  TCP    [::1]:64453            [::1]:5173             ESTABLISHED     22428
+PS C:\Users\jc\Documents\PROG\JS\multires-front> taskkill /PID 22544 /F
+Correcto: se terminó el proceso con PID 22544.
+PS C:\Users\jc\Documents\PROG\JS\multires-front> netstat -ano | findstr :5173
+  TCP    127.0.0.1:53375        127.0.0.1:5173         SYN_SENT        22428
+  TCP    [::1]:5173             [::1]:52181            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:54299            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:55672            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:58596            TIME_WAIT       0
+  TCP    [::1]:5173             [::1]:62752            TIME_WAIT       0
+PS C:\Users\jc\Documents\PROG\JS\multires-front>
+
+
+Sí, npm create vite@latest multires-front -- --template react crea proyecto nuevo desde cero en directorio vacío.
+
+
+

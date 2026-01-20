@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login"; // Crea después
+import Dashboard from "./pages/Dashboard"; // Crea después
+import Employees from "./pages/admin/Employees";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-      <div className="bg-slate-800/80 rounded-2xl px-8 py-6 shadow-xl">
-        <h1 className="text-3xl font-bold mb-2">React + Tailwind</h1>
-        <p className="text-slate-300">
-          Si ves este fondo oscuro y la tarjeta, Tailwind está funcionando.
-        </p>
+    <Router>
+      <div className="min-h-screen bg-gray-100">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          {/* Admin después */}
+          <Route path="/admin/*" element={<div>Admin WIP</div>} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/employees" element={<Employees />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
