@@ -1,8 +1,17 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login"; // Crea después
-import Dashboard from "./pages/Dashboard"; // Crea después
-import Employees from "./pages/admin/Employees";
-import Schedules from "./pages/admin/Schedules";
+// src/App.jsx
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useParams,
+} from "react-router-dom";
+import Admin from "./components/admin/Admin.jsx"; // ← tu Admin.jsx
+import Login from "./pages/Login";
+
+function AdminWrapper() {
+  const { tenantId } = useParams(); // captura /admin/:tenantId
+  return <Admin tenantId={tenantId} />;
+}
 
 function App() {
   return (
@@ -10,11 +19,17 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/" element={<Login />} />
-          {/* Admin después */}
-          <Route path="/admin/*" element={<div>Admin WIP</div>} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/employees" element={<Employees />} />
-          <Route path="/admin/schedules" element={<Schedules />} />
+
+          {/* ✅ Admin con tenantId */}
+          <Route path="/admin/:tenantId" element={<AdminWrapper />} />
+          <Route path="/admin/:tenantId/schedules" element={<AdminWrapper />} />
+          <Route path="/admin/:tenantId/employees" element={<AdminWrapper />} />
+
+          {/* Legacy (opcional) */}
+          <Route path="/admin/dashboard" element={<div>Dashboard WIP</div>} />
+
+          {/* Catch-all */}
+          <Route path="*" element={<div>404 - Not Found</div>} />
         </Routes>
       </div>
     </Router>
