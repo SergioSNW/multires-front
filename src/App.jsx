@@ -8,10 +8,10 @@ import {
 import Admin from "./components/admin/Admin.jsx"; // ← tu Admin.jsx
 import Login from "./pages/Login";
 
-function AdminWrapper() {
-  const { tenantId } = useParams(); // captura /admin/:tenantId
-  return <Admin tenantId={tenantId} />;
-}
+// function AdminWrapper() {
+//   const { tenantId } = useParams(); // captura /admin/:tenantId
+//   return <Admin tenantId={tenantId} />;
+// }
 
 function App() {
   return (
@@ -20,15 +20,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
 
-          {/* ✅ Admin con tenantId */}
-          <Route path="/admin/:tenantId" element={<AdminWrapper />} />
-          <Route path="/admin/:tenantId/schedules" element={<AdminWrapper />} />
-          <Route path="/admin/:tenantId/employees" element={<AdminWrapper />} />
+          {/* ✅ Admin simple pues JWT maneja tenantId */}
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/schedules" element={<Admin />} />
+          <Route path="/admin/employees" element={<Admin />} />
 
-          {/* Legacy (opcional) */}
-          <Route path="/admin/dashboard" element={<div>Dashboard WIP</div>} />
-
-          {/* Catch-all */}
+          {/* Catch-all routes not defined */}
           <Route path="*" element={<div>404 - Not Found</div>} />
         </Routes>
       </div>

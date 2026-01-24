@@ -1,27 +1,23 @@
 // src/components/admin/Admin.jsx → conectada
 import { useEffect, useState } from "react";
-import { fetchTenant, fetchEmployees } from "../../services/api.js";
+import { fetchMyTenant, fetchEmployees } from "../../services/api.js";
 
-export default function Admin({ tenantId = "696956f31e25f13a08a35ec8" }) {
+export default function Admin() {
   const [activeTab, setActiveTab] = useState("horarios");
   const [tenant, setTenant] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Admin.jsx → useEffect
   useEffect(() => {
     async function load() {
       setLoading(true);
       try {
-        console.log("🔄 Loading tenant:", tenantId);
+        // console.log("🔄 Loading tenant:", tenantId);
         const [tenantData, employeesData] = await Promise.all([
-          fetchTenant(tenantId),
-          fetchEmployees(), // ← API real /employees
+          fetchMyTenant(), // /tenants/me
+          fetchEmployees(), // /employees (JWT autofill)
         ]);
-        console.log("✅ Tenant:", tenantData.data);
-        console.log("✅ Employees:", employeesData.data.length);
-
         setTenant(tenantData.data);
         setEmployees(employeesData.data);
       } catch (err) {
@@ -32,7 +28,7 @@ export default function Admin({ tenantId = "696956f31e25f13a08a35ec8" }) {
       }
     }
     load();
-  }, [tenantId]);
+  }, []);
 
   const tabs = [
     { id: "horarios", icon: "⏰" },
@@ -137,7 +133,12 @@ export default function Admin({ tenantId = "696956f31e25f13a08a35ec8" }) {
                     marginTop: "0.5rem",
                   }}
                 >
-                  <input type="time" step="900s" defaultValue="07:00" style={{ flex: 1 }} />
+                  <input
+                    type="time"
+                    step="900s"
+                    defaultValue="07:00"
+                    style={{ flex: 1 }}
+                  />
                   <span>-</span>
                   <input type="time" defaultValue="18:00" style={{ flex: 1 }} />
                 </div>
