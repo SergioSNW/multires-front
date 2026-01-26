@@ -1,6 +1,7 @@
 // src/components/admin/Admin.jsx → conectada
 import { useEffect, useState } from "react";
 import { fetchMyTenant, fetchEmployees } from "../../services/api.js";
+import SchedulesTab from "./SchedulesTab.jsx";
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("horarios");
@@ -109,84 +110,7 @@ export default function Admin() {
 
       {/* Content */}
       {activeTab === "horarios" && (
-        <div style={{ display: "flex", gap: "2rem", height: "70vh" }}>
-          {/* Inputs izquierda */}
-          <div style={{ width: "300px", padding: "1rem" }}>
-            <h3>General Schedule</h3>
-            {["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((day) => (
-              <div
-                key={day}
-                style={{
-                  marginBottom: "1rem",
-                  padding: "1rem",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "8px",
-                }}
-              >
-                <label>
-                  <input type="checkbox" defaultChecked /> {day.toUpperCase()}
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginTop: "0.5rem",
-                  }}
-                >
-                  <input
-                    type="time"
-                    step="900s"
-                    defaultValue="07:00"
-                    style={{ flex: 1 }}
-                  />
-                  <span>-</span>
-                  <input type="time" defaultValue="18:00" style={{ flex: 1 }} />
-                </div>
-              </div>
-            ))}
-            <button
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                background: "#3b82f6",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                fontWeight: 600,
-              }}
-            >
-              💾 Save Schedule
-            </button>
-          </div>
-
-          {/* Coverage derecha */}
-          <div
-            style={{
-              flex: 1,
-              border: "1px solid #e5e7eb",
-              borderRadius: "12px",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                height: "100%",
-                background: "#f8fafc",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.5rem",
-                color: "#0369a1",
-              }}
-            >
-              📊 FullCalendar Coverage
-              <br />
-              {employees.map((e) => (
-                <div key={e.id}>{e.name}: Lun-Vie 09-18</div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <SchedulesTab tenant={tenant} onTenantChange={setTenant} />
       )}
       {activeTab === "horarios_ANTERIOR" && (
         <div
