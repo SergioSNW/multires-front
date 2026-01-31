@@ -1,20 +1,35 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+// src/App.jsx
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useParams,
+} from "react-router-dom";
+import Admin from "./components/admin/Admin.jsx"; // ← tu Admin.jsx
+import Login from "./pages/Login";
+
+// function AdminWrapper() {
+//   const { tenantId } = useParams(); // captura /admin/:tenantId
+//   return <Admin tenantId={tenantId} />;
+// }
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-      <div className="bg-slate-800/80 rounded-2xl px-8 py-6 shadow-xl">
-        <h1 className="text-3xl font-bold mb-2">React + Tailwind</h1>
-        <p className="text-slate-300">
-          Si ves este fondo oscuro y la tarjeta, Tailwind está funcionando.
-        </p>
+    <Router>
+      <div className="min-h-screen bg-gray-100">
+        <Routes>
+          <Route path="/" element={<Login />} />
+
+          {/* ✅ Admin simple pues JWT maneja tenantId */}
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/schedules" element={<Admin />} />
+          <Route path="/admin/employees" element={<Admin />} />
+
+          {/* Catch-all routes not defined */}
+          <Route path="*" element={<div>404 - Not Found</div>} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
