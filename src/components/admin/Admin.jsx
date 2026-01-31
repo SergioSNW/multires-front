@@ -1,274 +1,146 @@
-// src/components/admin/Admin.jsx → conectada
-import { useEffect, useState } from "react";
-import { fetchMyTenant, fetchEmployees } from "../../services/api.js";
-import SchedulesTab from "./SchedulesTab.jsx";
+// src/components/admin/Admin.jsx
+import { useState, useEffect, useCallback } from "react";
+import * as api from "../../services/api.js";
+import { AdminProvider } from "../../contexts/AdminContext.jsx";
+import Header from "../schedules/Header.jsx";
+import StickyTabs from "../schedules/StickyTabs.jsx";
+import SchedulesTab from "../schedules/SchedulesTab.jsx";
+import EmployeesTab from "../employees/EmployeesTab.jsx";
 
-export default function Admin() {
-  const [activeTab, setActiveTab] = useState("horarios");
-  const [tenant, setTenant] = useState(null);
-  const [employees, setEmployees] = useState([]);
+export default function Admin({ tenantId }) {
+  const [activeTab, setActiveTab] = useState("schedules");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const [tenant, setTenant] = useState(null);
+  const [draftTenant, setDraftTenant] = useState(null);
+  const [employees, setEmployees] = useState([]);
+  const [draftEmployees, setDraftEmployees] = useState([]);
+  const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
-    async function load() {
+    async function loadData() {
       setLoading(true);
       try {
-        // console.log("🔄 Loading tenant:", tenantId);
         const [tenantData, employeesData] = await Promise.all([
-          fetchMyTenant(), // /tenants/me
-          fetchEmployees(), // /employees (JWT autofill)
+          api.fetchMyTenant(tenantId),
+          api.fetchEmployees(tenantId),
         ]);
+        // Info at segments .data
         setTenant(tenantData.data);
         setEmployees(employeesData.data);
-      } catch (err) {
-        console.error("❌ Error:", err);
-        setError(err.message);
+        // Load drafts
+        setDraftTenant({ ...tenantData.data });
+        setDraftEmployees({ ...employeesData.data });
+        console.log(
+          "Loaded to provider ....\n@tenant:",
+          tenantData.data,
+          "@employees:",
+          employeesData.data
+        );
+      } catch (error) {
+        console.error("Load admin data error:", error);
       } finally {
         setLoading(false);
       }
     }
-    load();
-  }, []);
+    loadData();
+  }, [tenantId]);
 
-  const tabs = [
-    { id: "horarios", icon: "⏰" },
-    { id: "employees", icon: "👤" },
-    { id: "services", icon: "✂️" },
-    { id: "events", icon: "🎈" },
-    { id: "settings", icon: "⚙️" },
-  ];
+  // const updateTenant = async (data) => {
+  //   setTenant(data);
+  //   await api.updateTenant(tenantId, data);
+  // };
+  // const updateEmployees = async (data) => {
+  //   setEmployees(data);
+  //   await api.updateEmployees(tenantId, data);
+  // };
 
-  if (loading)
+  // This function only is passed to StickyTab
+  // const saveDraft = async () => {
+  //   try {
+  //     const saved = await api.updateTenant(tenantId, draftTenant);
+  //     setTenant(saved);
+  //     setDraftTenant(saved);
+  //     setIsDirty(false);
+  //   } catch (error) {
+  //     setDraftTenant(tenant); // Rollback
+  //   }
+  // };
+
+  // const markDirty = () => setIsDirty(true);
+
+  const markDirty = useCallback(() => setIsDirty(true), []);
+  const saveDraft = useCallback(async () => {
+    if (!isDirty || !draftTenant) return;
+
+    try {
+      console.log("💾 Saving McArthur schedule");
+
+      // 🔥 TU API anterior + tenant completo
+      const result = await api.updateMyGeneralWeek({
+        general_schedule: draftTenant.general_schedule, // Array[5]
+        general_breaks: draftTenant.general_breaks, // Array[2]
+        general_holidays: [], // Holidays pendiente
+        // + otros campos tenant si cambias name/address...
+        name: draftTenant.name,
+        minutes_slot: draftTenant.minutes_slot,
+      });
+
+      console.log("✅ Saved:", result.data);
+      setTenant(result.data);
+      setDraftTenant(result.data);
+      setIsDirty(false);
+    } catch (error) {
+      console.error("❌ Save error:", error);
+      setDraftTenant(tenant); // Rollback
+      alert("Error guardando schedule");
+    }
+  }, [draftTenant, tenant, isDirty]);
+  if (loading) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        Loading McArthur...
+      <div className="flex items-center justify-center min-h-screen bg-gray-200">
+        <div className="text-xl text-gray-500">Cargando Admin...</div>
       </div>
     );
-  if (error)
-    return <div style={{ padding: "2rem", color: "red" }}>Error: {error}</div>;
+  }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "schedules":
+        return <SchedulesTab />;
+      case "employees":
+        return <EmployeesTab />;
+      default:
+        return <SchedulesTab />;
+    }
+  };
 
   return (
-    <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "1rem" }}>
-      {/* Header */}
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "2rem",
-          padding: "1rem 0",
-          borderBottom: "3px solid #3b82f6",
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: "2rem", color: "#1f2937" }}>
-            {tenant.name}
-          </h1>
-          <p
-            style={{
-              margin: "0.5rem 0 0 0",
-              color: "#6b7280",
-              fontSize: "1.1rem",
-            }}
-          >
-            {tenant.city || "Madrid"}, {tenant.plan || "Basic"} Plan
-          </p>
+    <AdminProvider
+      // tenant={tenant}
+      // draftTenant={draftTenant}
+      // setDraftTenant={setDraftTenant}
+      // isDirty={isDirty}
+      // employees={employees}
+      tenant={tenant}
+      draftTenant={draftTenant}
+      onDraftChange={setDraftTenant}
+      onMarkDirty={markDirty}
+    >
+      <div className="w-full min-h-screen p-0 bg-gray-200">
+        <div className="flex flex-col min-h-screen px-2 pt-4 max-w-none sm:px-4 lg:px-6 xl:px-8">
+          <Header />
+          <StickyTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            onSave={saveDraft}
+            isDirty={isDirty}
+          />
+
+          {/* Render according activeTab */}
+          <div className="flex-1 pt-4">{renderContent()}</div>
         </div>
-      </header>
-      {/* Tabs */}
-      <nav
-        style={{
-          display: "flex",
-          gap: "0.25rem",
-          marginBottom: "2rem",
-        }}
-      >
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: "1rem 1.5rem",
-              border: activeTab === tab.id ? "none" : "1px solid #d1d5db",
-              background: activeTab === tab.id ? "#3b82f6" : "white",
-              color: activeTab === tab.id ? "white" : "#374151",
-              borderRadius: "12px",
-              cursor: "pointer",
-              fontSize: "1.5rem",
-              boxShadow:
-                activeTab === tab.id
-                  ? "0 4px 12px rgba(59,130,246,0.4)"
-                  : "none",
-              transition: "all 0.2s",
-            }}
-            title={tab.id}
-          >
-            {tab.icon}
-          </button>
-        ))}
-      </nav>
-
-      {/* Content */}
-      {activeTab === "horarios" && (
-        <SchedulesTab tenant={tenant} onTenantChange={setTenant} />
-      )}
-      {activeTab === "horarios_ANTERIOR" && (
-        <div
-          style={{
-            height: "70vh",
-            background: "#f8fafc",
-            borderRadius: "12px",
-            padding: "2rem",
-          }}
-        >
-          <h2 style={{ marginBottom: "1rem" }}>Schedules Tab</h2>
-          <p>FullCalendar coverage + 7 inputs (next step)</p>
-          <div
-            style={{
-              height: "500px",
-              background: "#e0f2fe",
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.2rem",
-              color: "#0369a1",
-            }}
-          >
-            ⏰ Coverage Preview
-            <br />
-            {employees.length} employees •{" "}
-            {tenant.general_week ? "General schedule active" : "Setup required"}
-          </div>
-        </div>
-      )}
-      {activeTab === "employees" && (
-        <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: "2rem",
-            }}
-          >
-            <h2>Employees ({employees.length})</h2>
-            <button
-              style={{
-                background: "#10b981",
-                color: "white",
-                border: "none",
-                padding: "0.75rem 1.5rem",
-                borderRadius: "8px",
-                fontWeight: 600,
-              }}
-            >
-              + Add Employee
-            </button>
-          </div>
-
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
-            {employees.map((emp) => (
-              <div
-                key={emp.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "1.5rem 2rem",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "12px",
-                  background: "white",
-                  boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <div
-                    style={{
-                      fontSize: "1.25rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    {emp.name}
-                  </div>
-                  <div style={{ color: "#6b7280", fontSize: "0.95rem" }}>
-                    {emp.role || "Barber"}
-                  </div>
-                </div>
-
-                <div style={{ textAlign: "right", minWidth: "250px" }}>
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                      marginBottom: "1rem",
-                      fontSize: "0.95rem",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={emp.custom_week || false}
-                      readOnly
-                      style={{ width: "1.25rem", height: "1.25rem" }}
-                    />
-                    <span style={{ fontWeight: 500 }}>Custom Schedule</span>
-                  </label>
-
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      style={{
-                        padding: "0.75rem",
-                        border: "1px solid #d1d5db",
-                        background: "white",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      ⏰ Edit
-                    </button>
-                    <button
-                      style={{
-                        padding: "0.75rem",
-                        border: "1px solid #d1d5db",
-                        background: "white",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      ✂️ Services
-                    </button>
-                    <button
-                      style={{
-                        padding: "0.75rem",
-                        color: "#ef4444",
-                        border: "1px solid #f87171",
-                        background: "white",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {activeTab === "services" && (
-        <div style={{ padding: "4rem" }}>✂️ Services WIP</div>
-      )}
-      {activeTab === "events" && (
-        <div style={{ padding: "4rem" }}>🎈 Events WIP</div>
-      )}
-      {activeTab === "settings" && (
-        <div style={{ padding: "4rem" }}>⚙️ Settings WIP</div>
-      )}
-    </div>
+      </div>
+    </AdminProvider>
   );
 }
