@@ -3,27 +3,26 @@ import { useAdmin } from "../../contexts/AdminContext.jsx";
 import { useDayShort } from "../../utils/dayMaster.js";
 
 export default function ScheduleDays() {
-  const { draftTenant, setDraftTenant } = useAdmin();
-  const shortDays = useDayShort(draftTenant?.locale);
+  const { draftTenant, updateDraft, isDirty } = useAdmin();
 
   if (!draftTenant)
     return <div className="p-12 text-center text-gray-400">Loading...</div>;
 
+  const shortDays = useDayShort(draftTenant?.locale);
   const generalSchedule = draftTenant.general_schedule || [];
 
-  // Slots 15 minutos: ['09:00', '09:15', '09:30', ..., '21:00']
+  // Slots size according draftTenant.minutes_slot
   const timeSlots = [];
   for (let h = 9; h <= 21; h++) {
-    for (let m = 0; m < 60; m += 15) {
+    for (let m = 0; m < 60; m += draftTenant.minutes_slot || 30) {
       timeSlots.push(
         `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`
       );
     }
   }
 
-  // HANDLERS OPTIMIZADOS
   const updateScheduleItem = (index, field, value) => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((item, i) =>
         i === index ? { ...item, [field]: value } : item
@@ -32,7 +31,7 @@ export default function ScheduleDays() {
   };
 
   const updateBreak = (scheduleIndex, breakIndex, field, value) => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((schedule, i) => {
         if (i !== scheduleIndex) return schedule;
@@ -47,7 +46,7 @@ export default function ScheduleDays() {
   };
 
   const deleteBreak = (scheduleIndex, breakIndex) => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((schedule, i) => {
         if (i !== scheduleIndex) return schedule;
@@ -60,7 +59,7 @@ export default function ScheduleDays() {
   };
 
   const toggleDayInSchedule = (index, day) => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((item, i) => {
         if (i !== index) return item;
@@ -70,10 +69,11 @@ export default function ScheduleDays() {
         return { ...item, days: Array.from(daysSet) };
       }),
     }));
+    console.log("✅ toggle ejecutado. isDirty=", isDirty);
   };
 
   const addScheduleItem = () => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: [
         ...prev.general_schedule,
@@ -89,7 +89,7 @@ export default function ScheduleDays() {
   };
 
   const addBreakToSchedule = (scheduleIndex) => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((schedule, i) => {
         if (i !== scheduleIndex) return schedule;
@@ -109,7 +109,7 @@ export default function ScheduleDays() {
   };
 
   const deleteScheduleItem = (index) => {
-    setDraftTenant((prev) => ({
+    updateDraft((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.filter((_, i) => i !== index),
     }));
@@ -130,7 +130,6 @@ export default function ScheduleDays() {
 
   return (
     <div className="p-8 bg-white border border-gray-100 shadow-2xl lg:p-12 rounded-3xl">
-
       <div className="flex items-center justify-between pb-6 mb-10 border-b-4 border-blue-200">
         <h4 className="text-2xl font-black tracking-tight text-gray-900">
           📅 General Schedules
@@ -277,7 +276,7 @@ export default function ScheduleDays() {
                   return (
                     <div
                       key={breakIndex}
-                      className="px-6 py-1 transition-all zzborder-t zzborder-orange-150 bg-gradient-to-r from-orange-50/50 to-yellow-50/50 hover:bg-orange-50/70"
+                      className="px-6 py-1 transition-all bg-orange-100 hover:bg-orange-200"
                     >
                       <div className="flex items-center justify-between h-10">
                         {/* MISMO ANCHO que START→END (w-24 x2 + gaps) */}

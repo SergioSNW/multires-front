@@ -1,67 +1,54 @@
-// import { createContext, useContext } from "react";
+import { createContext, useContext, useCallback } from "react";
+import * as api from "../services/api.js";
 
-// const AdminContext = createContext();
+const AdminContext = createContext();
 
-// // --- El useAdmin solo expone:
-// // 1. el tenant leido de la DB, no modificable
-// // 2. una copia de tenant-DB como draftTenant que es la editable/modificable
-// // 3. variable isDirty que indica si el draft ya no es como el original 
-// // 4. employees, tambien leido de DB y que tendra el mismo comportamiento de arriba
-// export function AdminProvider({
-//   tenant,
-//   draftTenant,
-//   setDraftTenant,
-//   isDirty,
-//   employees,
-//   children,
-// }) {
-//   return (
-//     <AdminContext.Provider
-//       value={{
-//         tenant, 
-//         draftTenant, 
-//         setDraftTenant, 
-//         isDirty, 
-//         employees,
-//       }}
-//     >
-//       {children}
-//     </AdminContext.Provider>
-//   );
-// }
+export function AdminProvider({ children, value }) {
+  const {
+    tenant,
+    draftTenant,
+    isDirty,
+    setTenant,
+    setDraftTenant,
+    setIsDirty,
+  } = value;
 
-// export function useAdmin() {
-//   const context = useContext(AdminContext);
-//   if (!context) throw new Error("useAdmin must be inside AdminProvider");
-//   return context;
-// }
+  // It will be used by any tab that allows data modification
+  const updateDraft = (updater) => {
+    setDraftTenant(updater);
+    setIsDirty(true);
+  };
 
+  // This fx only will be used by StickyTabs
+  const onSave = async () => {
+    try {
+      const result = await api.updateMyGeneralWeek(draftTenant);
+      setTenant(result.data);
+      setDraftTenant(result.data);
+      setIsDirty(false);
+    } catch (error) {
+      setDraftTenant(tenant);
+      setIsDirty(false);
+    }
+  };
 
-// src/contexts/AdminContext.jsx
-import { createContext, useContext, useState, useCallback } from 'react';
-
-export const AdminContext = createContext();
-
-export function AdminProvider({ children, tenant, draftTenant: initialDraft, onDraftChange, onMarkDirty }) {
-  const [draftTenant, setDraftTenantInternal] = useState(initialDraft || tenant);
-
-  // ✅ Wrapper que marca dirty CADA cambio
-  const setDraftTenant = useCallback((updater) => {
-    setDraftTenantInternal(prev => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
-      onDraftChange?.(next);  // Sube a Admin.jsx
-      onMarkDirty?.();        // 🔥 Activa Save button
-      return next;
-    });
-  }, [onDraftChange, onMarkDirty]);
+  // This fx only will be used by StickyTabs
+  const onCancel = () => {
+    setDraftTenant(tenant);
+    setIsDirty(false);
+  };
 
   return (
-    <AdminContext.Provider value={{ 
-      tenant, 
-      draftTenant, 
-      setDraftTenant,  // ← Usa el wrapper
-      employees: tenant.employees || [] 
-    }}>
+    <AdminContext.Provider
+      value={{
+        tenant,
+        draftTenant,
+        isDirty,
+        updateDraft,
+        onSave,
+        onCancel, 
+      }}
+    >
       {children}
     </AdminContext.Provider>
   );
@@ -69,6 +56,6 @@ export function AdminProvider({ children, tenant, draftTenant: initialDraft, onD
 
 export const useAdmin = () => {
   const context = useContext(AdminContext);
-  if (!context) throw new Error('useAdmin debe estar en AdminProvider');
+  if (!context) throw new Error("useAdmin must be in AdminProvider");
   return context;
 };

@@ -1,9 +1,8 @@
-export default function StickyTabs({
-  activeTab = "schedule",
-  onTabChange,
-  onSave,
-  isDirty,
-}) {
+import { useAdmin } from "../../contexts/AdminContext";
+
+export default function StickyTabs({ activeTab = "schedule", onTabChange }) {
+  const { isDirty, onSave, onCancel } = useAdmin();
+
   const tabs = [
     { id: "schedule", icon: "⏰", label: "Gral.Schedule" },
     { id: "employees", icon: "👤", label: "Employees" },
@@ -61,8 +60,9 @@ export default function StickyTabs({
           </div> */}
 
           {/* Save/Cancel */}
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <button
+              onClick={onCancel}
               disabled={!isDirty}
               className="px-4 py-2 text-sm font-medium bg-white border shadow-sm text-slate-700 border-slate-300 rounded-xl hover:bg-slate-50"
             >
@@ -76,7 +76,25 @@ export default function StickyTabs({
             >
               💾 Guardar
             </button>
-          </div>
+          </div> */}
+
+          {/* Save/Cancel buttons isDirty */}
+          {isDirty && (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onCancel}
+                className="px-4 py-2 text-sm font-semibold text-gray-700 transition-all bg-gray-200 border border-gray-300 rounded-lg hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onSave}
+                className="px-6 py-2 text-sm font-semibold text-white transition-all border rounded-lg shadow-lg bg-emerald-600 border-emerald-600 hover:shadow-xl hover:bg-emerald-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

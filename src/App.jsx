@@ -5,7 +5,7 @@ import {
   Route,
   useParams,
 } from "react-router-dom";
-import Admin from "./components/admin/Admin.jsx"; // ← tu Admin.jsx
+import Admin from "./components/admin/Admin.jsx"; 
 import Login from "./pages/Login";
 
 // function AdminWrapper() {
@@ -22,8 +22,9 @@ function App() {
 
           {/* ✅ Admin simple pues JWT maneja tenantId */}
           <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/schedules" element={<Admin />} />
-          <Route path="/admin/employees" element={<Admin />} />
+
+          {/* <Route path="/admin/schedules" element={<Admin />} />
+          <Route path="/admin/employees" element={<Admin />} /> */}
 
           {/* Catch-all routes not defined */}
           <Route path="*" element={<div>404 - Not Found</div>} />

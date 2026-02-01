@@ -20,7 +20,8 @@ export default function Login() {
       debugger;  // ← PAUSA aquí
       const data = await res.json();
       localStorage.setItem('token', data.token);
-      navigate('/admin/dashboard');
+      navigate('/admin');
+      // navigate('/admin/dashboard');
     } catch (err) {
       alert('Error login');
     }
