@@ -1,65 +1,82 @@
-const mockEmployees = [
+// src/components/employees/mockEmployees.js
+export default [
   {
     id: 1,
-    name: "Juan Pérez",
+    name: "Ana García López",
     phone: "+34 612 345 678",
-    schedule: [  // ← AÑADE array vacío o con datos
-      { day: "Lunes", from: "10:00", to: "19:00" }
-    ],
-    allServices: true,
+    email: "ana@barberia.com",
+    schedule: "general",
+    holidays: []
   },
   {
     id: 2,
-    name: "María García", 
+    name: "Carlos Martínez Ruiz",
     phone: "+34 699 123 456",
-    schedule: [],    // ← array vacío = badge "0 días"
-    allServices: true,
+    email: "carlos@barberia.com",
+    schedule: "custom",
+    holidays: [
+      { name: "Vacaciones verano", date: "15/07/2026 - 30/07/2026", days: 16 },
+      { name: "Puente diciembre", date: "24/12/2026", days: 1 }
+    ]
   },
   {
     id: 3,
-    name: "Carlos López",
-    phone: "+34 655 789 012",
-    schedule: [      // ← 1 día = badge azul
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Miércoles", from: "09:00", to: "18:00" },
-      { day: "Jueves", from: "09:00", to: "18:00" },
-      { day: "Sabado", from: "09:00", to: "18:00" },
-      { day: "Domingo", from: "09:00", to: "14:00" }
-    ],
-    allServices: true,
+    name: "María Fernández Soto",
+    phone: "+34 655 987 654",
+    email: "maria@barberia.com",
+    schedule: "custom",
+    holidays: [
+      { name: "Cirugía", date: "10/03/2026 - 20/03/2026", days: 11 }
+    ]
   },
   {
     id: 4,
-    name: "Anton Pirulero",
-    phone: "+34 655 789 012",
-    schedule: [],
-    allServices: true,
+    name: "Manuel Fernández Garcia",
+    phone: "+34 655 987 654",
+    email: "maria@barberia.com",
+    schedule: "custom",
+    custom_schedule: [  // ← NUEVO formato
+      {
+        days: ["MO", "WE", "FR", "SA"],
+        start: "15:00",
+        end: "21:30",
+        rrule: "",
+        breaks: [
+          { start: "19:00", end: "20:15", label: "Kit-kat-flush" },
+          { start: "16:00", end: "18:00", label: "Lunch" }
+        ]
+      },
+      {
+        days: ["WE"],
+        start: "09:00", 
+        end: "18:00",
+        rrule: "",
+        breaks: [
+          { start: "12:00", end: "17:00", label: "Lunch-b22" }
+        ]
+      }
+    ],    holidays: [
+      { name: "Ciraaaaaa", date: "10/03/2026 - 20/03/2026", days: 11 }
+    ]
   },
   {
     id: 5,
-    name: "Antonio Gonzalez",
-    phone: "+34 655 789 012",
-    schedule: [      // ← 1 día = badge azul
-      { day: "Miércoles", from: "09:00", to: "18:00" }
-    ],
-    allServices: false,
+    name: "Juan",
+    phone: "+34 655 987 654",
+    email: "maria@barberia.com",
+    schedule: "general",
+    holidays: [
+      { name: "Cirugía", date: "10/03/2026 - 20/03/2026", days: 11 }
+    ]
   },
+  {
+    id: 6,
+    name: "Jose luis",
+    phone: "+34 655 987 654",
+    email: "maria@barberia.com",
+    schedule: "general",
+    holidays: [
+      { name: "Cirugía", date: "10/03/2026 - 20/03/2026", days: 11 }
+    ]
+  }
 ];
-export default mockEmployees;

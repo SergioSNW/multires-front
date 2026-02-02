@@ -1,0 +1,57 @@
+/* src/components/employees/EmployeeList.module.css */
+
+.listContainer {
+  @apply h-full pb-12 pr-4 space-y-4 overflow-y-auto ;
+}
+
+.employeeCard {
+  @apply p-6 transition-all duration-300 border border-gray-200 cursor-pointer lg:p-8 rounded-3xl;
+}
+
+.employeeCardHover {
+  @apply hover:shadow-2xl hover:-translate-y-1 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-blue-50/50;
+}
+
+.employeeCardSelected {
+  @apply shadow-2xl ring-4 ring-emerald-200 bg-gradient-to-r from-emerald-50 to-blue-50;
+}
+
+.avatarContainer {
+  @apply flex items-center justify-center flex-shrink-0 bg-blue-500 shadow-lg w-14 h-14 lg:w-16 lg:h-16 rounded-2xl;
+}
+
+.avatarText {
+  @apply text-lg font-bold text-white lg:text-xl;
+}
+
+.infoSection {
+  @apply flex-1 min-w-0;
+}
+
+.nameText {
+  @apply text-lg font-bold leading-tight text-gray-900 break-words lg:text-xl;
+}
+
+.phoneText {
+  @apply text-sm text-gray-600 lg:text-base;
+}
+
+.flagsContainer {
+  @apply flex flex-col items-end flex-shrink-0 gap-2;
+}
+
+.flagBadge {
+  @apply px-3 py-1 text-xs font-semibold rounded-full shadow-sm lg:px-4 lg:py-2 lg:text-sm;
+}
+
+.flagCustom {
+  @apply text-blue-800 bg-gradient-to-r from-blue-100 to-blue-200;
+}
+
+.flagHolidays {
+  @apply bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800;
+}
+
+.underlineDivider {
+  @apply w-full h-px mt-6 bg-gradient-to-r from-gray-200 to-transparent;
+}

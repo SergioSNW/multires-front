@@ -23,9 +23,6 @@ function App() {
           {/* ✅ Admin simple pues JWT maneja tenantId */}
           <Route path="/admin" element={<Admin />} />
 
-          {/* <Route path="/admin/schedules" element={<Admin />} />
-          <Route path="/admin/employees" element={<Admin />} /> */}
-
           {/* Catch-all routes not defined */}
           <Route path="*" element={<div>404 - Not Found</div>} />
         </Routes>

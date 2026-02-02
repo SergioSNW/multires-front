@@ -1,0 +1,25 @@
+/* src/components/employees/EmployeesTab.module.css */
+
+.tabContainer {
+  @apply grid h-full grid-cols-1 gap-8 lg:grid-cols-[1fr_2fr];
+}
+
+.listWrapper {
+  @apply min-h-0;
+}
+
+.detailWrapper {
+  @apply min-h-0;
+}
+
+.mobileDetailContainer {
+  @apply pt-6 border-t border-gray-200 lg:hidden;
+}
+
+.closeButton {
+  @apply flex items-center justify-center w-full gap-2 px-4 py-2 mb-4 transition-all bg-rose-100 text-rose-700 rounded-xl hover:bg-rose-200;
+}
+
+.emptyDetail {
+  @apply flex items-center justify-center min-h-[400px] lg:min-h-0 text-gray-500 text-lg italic p-8 lg:p-12 border-2 border-dashed border-gray-200 rounded-3xl;
+}

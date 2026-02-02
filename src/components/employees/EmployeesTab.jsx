@@ -1,34 +1,81 @@
 // src/components/employees/EmployeesTab.jsx
-import { useState, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import styles from "./EmployeesTab.module.css";
 import EmployeeList from "./EmployeeList";
 import EmployeeDetail from "./EmployeeDetail";
-import mockEmployees from "./mockEmployees"; //--provisional
 
 export default function EmployeesTab() {
-  const [activeEmployeeId, setActiveEmployeeId] = useState(1);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
   const detailRef = useRef(null);
 
-  const activeEmployee =
-    mockEmployees.find((e) => e.id === activeEmployeeId) || null;
+  useEffect(() => {
+    if (detailRef.current) {
+      detailRef.current.scrollTop = 0;
+    }
+  }, [selectedEmployeeId]);
 
-  const handleHoverEmployee = useCallback((employeeId) => {
-    setActiveEmployeeId(employeeId);
-    if (detailRef.current) detailRef.current.scrollTop = 0;
+  const handleSelectEmployee = useCallback((employeeId) => {
+    setSelectedEmployeeId(employeeId);
+    setIsMobileDetailOpen(true);
+  }, []);
+
+  const handleCloseMobileDetail = useCallback(() => {
+    setIsMobileDetailOpen(false);
   }, []);
 
   return (
-    <div className="grid h-full grid-cols-[1.1fr_1.6fr] gap-6 lg:gap-8">
-      <EmployeeList
-        employees={mockEmployees}
-        activeId={activeEmployeeId}
-        onHover={handleHoverEmployee}
-      />
-      <EmployeeDetail
-        ref={detailRef}
-        employee={activeEmployee}
-        onEdit={() => console.log("Edit")}
-        onDelete={() => console.log("Delete")}
-      />
+    <div className={styles.tabContainer}>
+      {/* Lista */}
+      <div className={styles.listWrapper}>
+        <EmployeeList
+          selectedEmployeeId={selectedEmployeeId}
+          onSelectEmployee={handleSelectEmployee}
+        />
+      </div>
+
+      {/* Detail Desktop */}
+      {selectedEmployeeId ? (
+        <div className={styles.detailWrapper}>
+          <EmployeeDetail
+            ref={detailRef}
+            selectedEmployeeId={selectedEmployeeId}
+          />
+        </div>
+      ) : (
+        <div className={styles.emptyDetail}>
+          Hover an employee to see details
+        </div>
+      )}
+
+      {/* Detail Móvil */}
+      {isMobileDetailOpen && selectedEmployeeId && (
+        <div className={styles.mobileDetailContainer}>
+          <button
+            className={styles.closeButton}
+            onClick={handleCloseMobileDetail}
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            Close details
+          </button>
+          <EmployeeDetail
+            ref={detailRef}
+            selectedEmployeeId={selectedEmployeeId}
+          />
+        </div>
+      )}
     </div>
   );
 }
