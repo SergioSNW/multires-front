@@ -19,7 +19,7 @@ export default function Admin({ tenantId }) {
       try {
         const tenantData = await api.fetchMyTenant(tenantId);
         setTenant(tenantData.data);
-        setDraftTenant({ ...tenantData.data }); 
+        setDraftTenant({ ...tenantData.data });
         setIsDirty(false);
       } catch (error) {
         console.error("Load error:", error);
@@ -38,6 +38,17 @@ export default function Admin({ tenantId }) {
     );
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "schedules":
+        return <SchedulesTab />;
+      case "employees":
+        return <EmployeesTab />;
+      default:
+        return <SchedulesTab />;
+    }
+  };
+
   return (
     <AdminProvider
       value={{
@@ -53,9 +64,9 @@ export default function Admin({ tenantId }) {
         <div className="flex flex-col min-h-screen px-2 pt-4 max-w-none sm:px-4 lg:px-6 xl:px-8">
           <Header />
           <StickyTabs activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex-1 pt-4">
-            {activeTab === "schedules" ? <SchedulesTab /> : <EmployeesTab />}
-          </div>
+
+          {/* Render according activeTab */}
+          <div className="flex-1 pt-4">{renderContent()}</div>
         </div>
       </div>
     </AdminProvider>
