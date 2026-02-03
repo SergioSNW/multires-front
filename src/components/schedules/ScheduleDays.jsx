@@ -9,7 +9,14 @@ export default function ScheduleDays() {
     return <div className="p-12 text-center text-gray-400">Loading...</div>;
 
   const shortDays = useDayShort(draftTenant?.locale);
-  const generalSchedule = draftTenant.general_schedule || [];
+  const general_schedule = draftTenant.general_schedule || [];
+
+  console.log('ScheduleDays:', { 
+    draftTenant, 
+    general_schedule
+  });
+  
+
 
   // Slots size according draftTenant.minutes_slot
   const timeSlots = [];
@@ -143,7 +150,7 @@ export default function ScheduleDays() {
       </div>
 
       <div className="space-y-6">
-        {generalSchedule.map((schedule, index) => {
+        {general_schedule.map((schedule, index) => {
           const blockSlots = getBlockTimeSlots(schedule);
 
           return (
@@ -153,7 +160,7 @@ export default function ScheduleDays() {
                 {/* LÍNEA 1: Block # + DELETE */}
                 <div className="flex items-center justify-between p-4 px-6 border-b border-blue-200">
                   <div className="text-lg font-black text-blue-900">
-                    Block {index + 1} (of {generalSchedule.length})
+                    Block {index + 1} (of {general_schedule.length})
                   </div>
                   <button
                     onClick={() => deleteScheduleItem(index)}
@@ -181,7 +188,7 @@ export default function ScheduleDays() {
                 <div className="px-6 py-3 border-b border-blue-150">
                   <div className="grid grid-cols-7 gap-2">
                     {shortDays.map(({ code, label }) => {
-                      const isUsedBefore = generalSchedule
+                      const isUsedBefore = general_schedule
                         .slice(0, index)
                         .some((s) => s.days?.includes(code));
                       return (
