@@ -17,26 +17,6 @@ export function AdminProvider({ children, value }) {
     setIsDirty,
   } = value;
 
-  // It will be used by any tab that allows data modification
-  // This fx only will be used by StickyTabs
-  // const onSave = async () => {
-  //   try {
-  //     const result = await api.updateMyGeneralWeek(draftTenant);
-  //     setTenant(result.data);
-  //     setDraftTenant(result.data);
-  //     setIsDirty(false);
-  //   } catch (error) {
-  //     setDraftTenant(tenant);
-  //     setIsDirty(false);
-  //   }
-  // };
-
-  // // This fx only will be used by StickyTabs
-  // const onCancel = () => {
-  //   setDraftTenant(tenant);
-  //   setIsDirty(false);
-  // };
-
   // UPDATE DRAFT - tenant O employees
   const updateDraft = (updater) => {
     if (updater.tenant || updater.draftTenant !== undefined) {
@@ -53,14 +33,24 @@ export function AdminProvider({ children, value }) {
     try {
       // Save tenant (general)
       const tenantResult = await api.updateMyGeneralWeek(draftTenant);
-      setTenant(tenantResult.data);
-      setDraftTenant(tenantResult.data);
+      // setTenant(tenantResult.data);
+      // setDraftTenant(tenantResult.data);
 
-      // Save employees (nuevo endpoint)
-      console.log(
-        "Aqui falta montar la api para actualizar TODOS los empleados...",
-        draftEmployees
-      );
+      console.log("llamando a bulk con... ", draftEmployees);
+
+      // Employees BULK
+      const employeesResult = await api.bulkUpdateEmployees(draftEmployees); // ← Nuevo endpoint
+      console.log("recibido de bulk... ", employeesResult);
+
+      // Sync state
+      setTenant(draftTenant);
+      setEmployees(draftEmployees);
+      setDraftTenant(draftTenant);
+      setDraftEmployees(draftEmployees);
+      setIsDirty(false);
+
+      toast.success("Guardado correctamente");
+
       // if (draftEmployees.length > 0 && draftEmployees.some((e) => e.isDirty)) {
       //   const employeesResult = await api.updateEmployees(draftEmployees);
       //   setEmployees(employeesResult.data);

@@ -33,3 +33,9 @@ export const updateMyGeneralWeek = (data) =>
     body: JSON.stringify(data),
   });
 
+  export const bulkUpdateEmployees = (data) =>
+  apiRequest("/employees/bulk", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+
