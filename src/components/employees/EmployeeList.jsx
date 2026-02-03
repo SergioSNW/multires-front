@@ -1,50 +1,32 @@
-// src/components/employees/EmployeeList.jsx - COMPLETO FUNCIONAL
-import styles from './EmployeeList.module.css';
-import mockEmployees from "./mockEmployees.js";
+// file:27 - SOLO _id + Context
+import styles from "./EmployeeList.module.css";
 
-export default function EmployeeList({ 
-  employees,  // ← Context O mock fallback
-  selectedEmployeeId, 
-  onSelectEmployee, 
-  onUpdateEmployee 
+export default function EmployeeList({
+  employees = [], // ← Real API fallback []
+  selectedEmployeeId,
+  onSelectEmployee,
+  onUpdateEmployee,
 }) {
-
-
- // ← DEBUG
- console.log('EmployeeList props:', { 
-  employees, 
-  selectedEmployeeId, 
-  hasOnSelect: typeof onSelectEmployee === 'function',
-  hasOnUpdate: typeof onUpdateEmployee === 'function'
-});
-
-
-
-  const toggleScheduleType = (employeeId) => {
-    const employee = employees.find(e => e.id === employeeId);
-    if (employee) {
-      onUpdateEmployee(employeeId, {
-        schedule: employee.schedule === 'general' ? 'custom' : 'general',
-        isDirty: true
-      });
-    }
-  };
-
   return (
     <div className={styles.listContainer}>
+      {" "}
+      {/* h-full pb-12 pr-4 overflow-y-auto */}
       {employees.map((employee) => {
-        const isSelected = employee.id === selectedEmployeeId;
-        const hasCustomSchedule = employee.schedule !== "general";
-        const hasExtraHolidays = employee.holidays?.length > 0;
+        // ← employees real
+        const isSelected = employee._id === selectedEmployeeId; // ← _id
+        const hasCustomSchedule = !employee.sw_general_schedule; // ← API field
+        const hasExtraHolidays = employee.custom_holidays?.length > 0;
 
         return (
           <div
-            key={employee._id}
-            onMouseEnter={() => onSelectEmployee(employee._id)}
-            className={`${styles.employeeCard} ${styles.employeeCardHover} ${
-              isSelected ? styles.employeeCardSelected : ''
-            }`}
+            key={employee._id} // ← _id
+            onMouseEnter={() => onSelectEmployee(employee._id)} // ← _id
+            className={`
+              ${styles.employeeCard}
+              ${isSelected ? styles.employeeCardSelected : ""}
+            `}
           >
+            {/* Tu JSX intacto: avatar, name, badges... */}
             <div className="flex items-start justify-between gap-6">
               {/* Avatar + Info */}
               <div className="flex items-center flex-1 min-w-0 gap-6">
@@ -64,6 +46,9 @@ export default function EmployeeList({
                 <div className={styles.infoSection}>
                   <h3 className={styles.nameText}>{employee.name}</h3>
                   <p className={styles.phoneText}>{employee.phone}</p>
+                  <p className={styles.phoneText}>{employee.role}</p>
+                  <p className={styles.phoneText}>{employee._id}</p>
+                  <p className={styles.phoneText}>{employee.sw_general_schedule}</p>
                 </div>
               </div>
 
@@ -76,7 +61,11 @@ export default function EmployeeList({
                     toggleScheduleType(employee.id);
                   }}
                   className="p-2 text-xs font-semibold transition-all rounded-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  title={hasCustomSchedule ? "Switch to General" : "Set Custom Schedule"}
+                  title={
+                    hasCustomSchedule
+                      ? "Switch to General"
+                      : "Set Custom Schedule"
+                  }
                 >
                   {hasCustomSchedule ? (
                     <span className="px-3 py-1 text-blue-700 bg-blue-100 rounded-lg">
@@ -91,7 +80,9 @@ export default function EmployeeList({
 
                 {/* Flags */}
                 {hasExtraHolidays && (
-                  <span className={`${styles.flagBadge} ${styles.flagHolidays}`}>
+                  <span
+                    className={`${styles.flagBadge} ${styles.flagHolidays}`}
+                  >
                     {employee.holidays.length} Holidays
                   </span>
                 )}
@@ -99,6 +90,18 @@ export default function EmployeeList({
             </div>
 
             <div className={styles.underlineDivider} />
+
+            {/* Badges API */}
+            <div className="flex flex-col items-end gap-2">
+              {hasCustomSchedule && (
+                <span className={styles.customBadge}>Horario custom</span>
+              )}
+              {hasExtraHolidays && (
+                <span className={styles.holidaysBadge}>
+                  {employee.custom_holidays.length} vacaciones
+                </span>
+              )}
+            </div>
           </div>
         );
       })}
