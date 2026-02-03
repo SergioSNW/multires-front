@@ -1,80 +1,64 @@
-// src/components/employees/EmployeesTab.jsx
-import { useState, useEffect, useRef, useCallback } from "react";
-import styles from "./EmployeesTab.module.css";
-import EmployeeList from "./EmployeeList";
-import EmployeeDetail from "./EmployeeDetail";
+// src/components/employees/EmployeesTab.jsx - PROPS CORRECTOS FUNCIONAL
+import { useState, useEffect, useRef } from 'react';
+import { useAdmin } from "../../contexts/AdminContext";
+import styles from './EmployeesTab.module.css';
+import EmployeeList from './EmployeeList';
+import EmployeeDetail from './EmployeeDetail';
 
 export default function EmployeesTab() {
+  const { draftEmployees, updateDraft } = useAdmin();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
   const detailRef = useRef(null);
 
-  useEffect(() => {
-    if (detailRef.current) {
-      detailRef.current.scrollTop = 0;
-    }
-  }, [selectedEmployeeId]);
-
-  const handleSelectEmployee = useCallback((employeeId) => {
+  // ← ARROW FUNCTIONS DIRECTAS (SIEMPRE función, SIN useCallback)
+  const handleSelectEmployee = (employeeId) => {
     setSelectedEmployeeId(employeeId);
-    setIsMobileDetailOpen(true);
-  }, []);
+    if (detailRef.current) {
+      detailRef.current.scrollTop = 0; // Reset scroll
+    }
+  };
 
-  const handleCloseMobileDetail = useCallback(() => {
-    setIsMobileDetailOpen(false);
-  }, []);
+  const updateEmployee = (employeeId, updates) => {
+    const updatedEmployees = draftEmployees.map(emp => 
+      emp.id === employeeId ? { ...emp, ...updates } : emp
+    );
+    updateDraft({ draftEmployees: updatedEmployees });
+  };
+
+  // DEBUG - confirma funciones llegan
+  console.log('EmployeesTab functions:', {
+    employees: draftEmployees,
+    hasOnSelect: typeof handleSelectEmployee === 'function',
+    hasOnUpdate: typeof updateEmployee === 'function'
+  });
 
   return (
     <div className={styles.tabContainer}>
-      {/* Lista */}
       <div className={styles.listWrapper}>
-        <EmployeeList
+        <EmployeeList 
+          employees={draftEmployees.length > 0 ? draftEmployees : []}
           selectedEmployeeId={selectedEmployeeId}
-          onSelectEmployee={handleSelectEmployee}
+          onSelectEmployee={handleSelectEmployee}  // ← PROP CLAVE
+          onUpdateEmployee={updateEmployee}        // ← PROP CLAVE
         />
       </div>
 
-      {/* Detail Desktop */}
-      {selectedEmployeeId ? (
-        <div className={styles.detailWrapper}>
-          <EmployeeDetail
-            ref={detailRef}
-            selectedEmployeeId={selectedEmployeeId}
-          />
-        </div>
-      ) : (
-        <div className={styles.emptyDetail}>
-          Hover an employee to see details
+      {/* console.log('Hover state:', { selectedEmployeeId }); */}
+      
+      {selectedEmployeeId && (
+        <div className={styles.detailWrapper} ref={detailRef}>
+          <button 
+            onClick={() => setSelectedEmployeeId(null)}
+            className="px-4 py-2 mb-4 text-gray-800 bg-gray-200 rounded-lg hover:bg-gray-300"
+          >
+            Cerrar detalles
+          </button>
+          <EmployeeDetail selectedEmployeeId={selectedEmployeeId} />
         </div>
       )}
-
-      {/* Detail Móvil */}
-      {isMobileDetailOpen && selectedEmployeeId && (
-        <div className={styles.mobileDetailContainer}>
-          <button
-            className={styles.closeButton}
-            onClick={handleCloseMobileDetail}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-            Close details
-          </button>
-          <EmployeeDetail
-            ref={detailRef}
-            selectedEmployeeId={selectedEmployeeId}
-          />
-        </div>
+      
+      {!selectedEmployeeId && (
+        <div className={styles.emptyDetail}>Pasa el ratón sobre un empleado</div>
       )}
     </div>
   );

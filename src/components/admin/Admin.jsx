@@ -11,15 +11,22 @@ export default function Admin({ tenantId }) {
   const [loading, setLoading] = useState(true);
   const [tenant, setTenant] = useState(null);
   const [draftTenant, setDraftTenant] = useState(null);
+  const [employees, setEmployees] = useState([]);
+  const [draftEmployees, setDraftEmployees] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
-        const tenantData = await api.fetchMyTenant(tenantId);
+        const [tenantData, employeesData] = await Promise.all([
+          api.fetchMyTenant(), 
+          api.fetchEmployees(), 
+        ]);
         setTenant(tenantData.data);
         setDraftTenant({ ...tenantData.data });
+        setEmployees(employeesData.data);
+        setDraftEmployees([...employeesData.data]); 
         setIsDirty(false);
       } catch (error) {
         console.error("Load error:", error);
@@ -29,6 +36,26 @@ export default function Admin({ tenantId }) {
     }
     loadData();
   }, [tenantId]);
+
+
+
+
+  // useEffect(() => {
+  //   async function loadData() {
+  //     setLoading(true);
+  //     try {
+  //       const tenantData = await api.fetchMyTenant(tenantId);
+  //       setTenant(tenantData.data);
+  //       setDraftTenant({ ...tenantData.data });
+  //       setIsDirty(false);
+  //     } catch (error) {
+  //       console.error("Load error:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   loadData();
+  // }, [tenantId]);
 
   if (loading) {
     return (
@@ -56,6 +83,10 @@ export default function Admin({ tenantId }) {
         setTenant,
         draftTenant,
         setDraftTenant,
+        employees,
+        setEmployees,
+        draftEmployees,
+        setDraftEmployees,
         isDirty,
         setIsDirty,
       }}
