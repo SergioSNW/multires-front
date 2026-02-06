@@ -6,7 +6,7 @@ import EmployeeList from "./EmployeeList";
 import EmployeeDetail from "./EmployeeDetail";
 
 export default function EmployeesTab() {
-  const { draftEmployees, updateDraft } = useAdmin();
+  const { draftEmployees, updateDraftEmployees } = useAdmin();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
   const detailRef = useRef(null);
@@ -29,26 +29,22 @@ export default function EmployeesTab() {
     setSelectedEmployeeId(null);
   }, []);
 
-  const updateEmployee = useCallback(
-    (employeeId, updates) => {
-      const updated = draftEmployees.map((emp) =>
-        emp._id === employeeId ? { ...emp, ...updates } : emp
-      );
-      updateDraft({ draftEmployees: updated });
-    },
-    [draftEmployees, updateDraft]
-  );
+  const updateEmployee = (id, changes) => {
+    updateDraftEmployees((prev) =>
+      prev.map((e) => (e._id === id ? { ...e, ...changes } : e)),
+    );
+  };
 
   // Reemplaza flex → grid TU MAQUETA
   return (
     <div className="grid h-screen grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8 p-6 lg:p-8">
       {/* LISTA 1/3 */}
       <div className="min-h-0">
-        <div 
+        <div
           ref={listRef}
           className="h-[calc(100vh-6rem)] overflow-y-auto pb-12 pr-4"
         >
-          <EmployeeList 
+          <EmployeeList
             employees={draftEmployees}
             selectedEmployeeId={selectedEmployeeId}
             onSelectEmployee={handleSelectEmployee}
@@ -59,7 +55,7 @@ export default function EmployeesTab() {
 
       {/* DETAIL 2/3 - SIEMPRE VISIBLE */}
       <div className="min-h-0">
-        <div 
+        <div
           ref={detailRef}
           className="sticky top-6 h-[calc(100vh-6rem)] overflow-y-auto p-8 rounded-3xl bg-gradient-to-br from-slate-50/50 to-transparent"
         >
@@ -73,4 +69,5 @@ export default function EmployeesTab() {
         </div>
       </div>
     </div>
-  );}
+  );
+}

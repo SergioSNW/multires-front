@@ -5,7 +5,8 @@ import {
   Route,
   useParams,
 } from "react-router-dom";
-import Admin from "./components/admin/Admin.jsx"; 
+import { Toaster } from "react-hot-toast";
+import Admin from "./components/admin/Admin.jsx";
 import Login from "./pages/Login";
 
 // function AdminWrapper() {
@@ -27,6 +28,16 @@ function App() {
           <Route path="*" element={<div>404 - Not Found</div>} />
         </Routes>
       </div>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
+      />
     </Router>
   );
 }

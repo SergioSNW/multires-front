@@ -1,5 +1,6 @@
 import { createContext, useContext, useCallback } from "react";
 import * as api from "../services/api.js";
+import { toast } from "react-hot-toast";
 
 const AdminContext = createContext();
 
@@ -17,14 +18,14 @@ export function AdminProvider({ children, value }) {
     setIsDirty,
   } = value;
 
-  // UPDATE DRAFT - tenant O employees
-  const updateDraft = (updater) => {
-    if (updater.tenant || updater.draftTenant !== undefined) {
-      setDraftTenant(updater.draftTenant || updater.tenant);
-    }
-    if (updater.draftEmployees !== undefined) {
-      setDraftEmployees(updater.draftEmployees);
-    }
+  // UPDATE DRAFTS: Tenant and Employees
+  const updateDraftTenant = (updater) => {
+    setDraftTenant(updater);
+    setIsDirty(true);
+  };
+
+  const updateDraftEmployees = (updater) => {
+    setDraftEmployees(updater);
     setIsDirty(true);
   };
 
@@ -59,8 +60,9 @@ export function AdminProvider({ children, value }) {
       //   );
       // }
 
-      setIsDirty(false);
     } catch (error) {
+      toast.error("❌ Error al guardar empleados");
+      console.error(error);
       // Rollback
       setDraftTenant(tenant);
       setDraftEmployees(employees);
@@ -83,7 +85,8 @@ export function AdminProvider({ children, value }) {
         employees,
         draftEmployees,
         isDirty,
-        updateDraft,
+        updateDraftTenant,
+        updateDraftEmployees,
         onSave,
         onCancel,
       }}

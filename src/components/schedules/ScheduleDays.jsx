@@ -3,7 +3,7 @@ import { useAdmin } from "../../contexts/AdminContext.jsx";
 import { useDayShort } from "../../utils/dayMaster.js";
 
 export default function ScheduleDays() {
-  const { draftTenant, updateDraft, isDirty } = useAdmin();
+  const { draftTenant, updateDraftTenant, isDirty } = useAdmin();
 
   if (!draftTenant)
     return <div className="p-12 text-center text-gray-400">Loading...</div>;
@@ -29,7 +29,7 @@ export default function ScheduleDays() {
   }
 
   const updateScheduleItem = (index, field, value) => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((item, i) =>
         i === index ? { ...item, [field]: value } : item
@@ -38,7 +38,7 @@ export default function ScheduleDays() {
   };
 
   const updateBreak = (scheduleIndex, breakIndex, field, value) => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((schedule, i) => {
         if (i !== scheduleIndex) return schedule;
@@ -53,7 +53,7 @@ export default function ScheduleDays() {
   };
 
   const deleteBreak = (scheduleIndex, breakIndex) => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((schedule, i) => {
         if (i !== scheduleIndex) return schedule;
@@ -66,7 +66,7 @@ export default function ScheduleDays() {
   };
 
   const toggleDayInSchedule = (index, day) => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((item, i) => {
         if (i !== index) return item;
@@ -80,7 +80,7 @@ export default function ScheduleDays() {
   };
 
   const addScheduleItem = () => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: [
         ...prev.general_schedule,
@@ -96,7 +96,7 @@ export default function ScheduleDays() {
   };
 
   const addBreakToSchedule = (scheduleIndex) => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.map((schedule, i) => {
         if (i !== scheduleIndex) return schedule;
@@ -116,7 +116,7 @@ export default function ScheduleDays() {
   };
 
   const deleteScheduleItem = (index) => {
-    updateDraft((prev) => ({
+    updateDraftTenant((prev) => ({
       ...prev,
       general_schedule: prev.general_schedule.filter((_, i) => i !== index),
     }));
